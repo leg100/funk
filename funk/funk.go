@@ -59,7 +59,7 @@ type StorageClient interface {
 	Bucket(name string) *storage.BucketHandle
 }
 
-func Upload(client StorageClient, ctx context.Context, buf *bytes.Buffer, projectID, bucket, name string) (*storage.ObjectHandle, *storage.ObjectAttrs, error) {
+func Upload(client StorageClient, ctx context.Context, buf *bytes.Buffer, bucket, name string) (*storage.ObjectHandle, *storage.ObjectAttrs, error) {
 	bh := client.Bucket(bucket)
 	// Next check if the bucket exists
 	if _, err := bh.Attrs(ctx); err != nil {

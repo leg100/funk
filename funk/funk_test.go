@@ -83,12 +83,12 @@ func TestUpload(t *testing.T) {
 	ctx := context.Background()
 	var buf bytes.Buffer
 
-	_, _, err := Upload(client, ctx, &buf, "poo", "piss", "pah")
+	_, _, err := Upload(client, ctx, &buf, "piss", "pah")
 	if err != storage.ErrBucketNotExist {
 		t.Errorf("expected bucket not exist error, but got %q", err)
 	}
 
-	_, _, err = Upload(client, ctx, &buf, "poo", "bucket", "pah")
+	_, _, err = Upload(client, ctx, &buf, "bucket", "pah")
 	if err != nil {
 		t.Errorf("expected no error, but got %q", err)
 	}
