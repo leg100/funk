@@ -5,8 +5,9 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"github.com/leg100/funk/funk"
 	"os"
+
+	"github.com/leg100/funk/funk"
 
 	"cloud.google.com/go/storage"
 )
@@ -38,7 +39,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	_, objAttrs, err := funk.Upload(client, ctx, buf, projectID, bucket, name)
+	_, objAttrs, err := funk.Upload(client, ctx, buf, bucket, name)
 	if err != nil {
 		switch err {
 		case storage.ErrBucketNotExist:
