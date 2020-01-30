@@ -7,6 +7,7 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
+	"os"
 	"path/filepath"
 
 	"cloud.google.com/go/storage"
@@ -54,6 +55,33 @@ func CreateTar(dir string, filenames []string) *bytes.Buffer {
 		log.Fatal(err)
 	}
 	return &buf
+}
+
+func ExtractTar(dir string, buf *bytes.Buffer) (int, error) {
+	var files int
+	tr := tar.NewReader(buf)
+	for {
+		hdr, err := tr.Next()
+		if err == io.EOF {
+			break // End of archive
+		}
+		if err != nil {
+			log.Fatal(err)
+		}
+		path := filepath.Join(dir, hdr.Name)
+		f, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE, 0644)
+		if err != nil {
+			log.Fatal(err)
+		}
+		if _, err := io.Copy(f, tr); err != nil {
+			log.Fatal(err)
+		}
+		if err := f.Close(); err != nil {
+			log.Fatal(err)
+		}
+		files++
+	}
+	return files, nil
 }
 
 type StorageClient interface {

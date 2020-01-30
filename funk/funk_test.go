@@ -6,6 +6,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"os"
 	"sort"
@@ -60,6 +61,27 @@ func TestCreateTar(t *testing.T) {
 
 	if got != want {
 		t.Errorf("Got %d files in tar file, but expected %d", got, want)
+	}
+}
+
+func TestExtractTar(t *testing.T) {
+	var want = 3
+	var got int
+
+	filenames := []string{"one.tf", "two.tf", "three.tf"}
+	buf := CreateTar("./testdata", filenames)
+	dir, err := ioutil.TempDir("", "test-extract-tar")
+	if err != nil {
+		t.Errorf("Couldn't create temp dir")
+	}
+	defer os.RemoveAll(dir) // clean up
+
+	got, err = ExtractTar(dir, buf)
+	if err != nil {
+		t.Errorf("Got error from extracting tarball: %q", err)
+	}
+	if got != want {
+		t.Errorf("Expected %d files in archive; got %d", want, got)
 	}
 }
 
