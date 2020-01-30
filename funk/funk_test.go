@@ -77,18 +77,26 @@ func setupFakeStorage() *fakestorage.Server {
 	return server
 }
 
-func TestUpload(t *testing.T) {
+func TestGCS(t *testing.T) {
 	server := setupFakeStorage()
 	client := server.Client()
 	ctx := context.Background()
 	var buf bytes.Buffer
 
+	// upload obj to non-existant bucket
 	_, _, err := Upload(client, ctx, &buf, "piss", "pah")
 	if err != storage.ErrBucketNotExist {
 		t.Errorf("expected bucket not exist error, but got %q", err)
 	}
 
+	// upload obj to existing bucket
 	_, _, err = Upload(client, ctx, &buf, "bucket", "pah")
+	if err != nil {
+		t.Errorf("expected no error, but got %q", err)
+	}
+
+	// download existing obj from existing bucket
+	_, err = Download(client, ctx, "bucket", "pah")
 	if err != nil {
 		t.Errorf("expected no error, but got %q", err)
 	}

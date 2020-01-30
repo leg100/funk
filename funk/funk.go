@@ -4,6 +4,7 @@ import (
 	"archive/tar"
 	"bytes"
 	"context"
+	"io"
 	"io/ioutil"
 	"log"
 	"path/filepath"
@@ -77,4 +78,25 @@ func Upload(client StorageClient, ctx context.Context, buf *bytes.Buffer, bucket
 
 	attrs, err := obj.Attrs(ctx)
 	return obj, attrs, err
+}
+
+func Download(client StorageClient, ctx context.Context, bucket, name string) (*bytes.Buffer, error) {
+	var buf bytes.Buffer
+	bh := client.Bucket(bucket)
+	// Next check if the bucket exists
+	if _, err := bh.Attrs(ctx); err != nil {
+		return nil, err
+	}
+
+	obj := bh.Object(name)
+	r, err := obj.NewReader(ctx)
+	if err != nil {
+		return nil, err
+	}
+	defer r.Close()
+	if _, err := io.ReadFull(r, buf.Bytes()); err != nil {
+		return nil, err
+	}
+
+	return &buf, err
 }
